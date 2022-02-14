@@ -23,7 +23,7 @@ _(Below is the initial project outline)._
 
 ## Roadmap and timeline
 
-Most of the work on this research project should take place over the next six weeks (18 January&ndash;1 March). The overall work plan is very flexible so expect new additions to come in spurts and corrections and polish to continue even after the main work has ended.
+Most of the work on this research project should take place over the next few weeks. The overall work plan is very flexible so expect new additions to come in spurts and corrections and polish to continue even after the main work has ended.
 
 1. Outline at a high level the various possible approaches and strategies while highlighting the most likely candidate for implementation.
 2. Go into specific detail on the most promising approaches, including notes on implementation.
