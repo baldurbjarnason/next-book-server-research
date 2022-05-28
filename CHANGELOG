@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 28 May 2022
+
+Revisiting this with a clear eye. Rethinking the serverside. Finished a broad overview the auth possibilities. I'm thinking that the next step is to hammer together some code samples to clarify my thinking.
+
 ## 18 January 2022
 
 Initial setup of project and a broad overview of auth/login issues.
