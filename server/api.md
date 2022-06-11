@@ -1,14 +1,64 @@
 # The API (or, how you get stuff from here to there)
 
-As you'd guess, the standardised options here range from the too-simple-to-work all the way to the too-complex-to-work. But there should be stuff in the middle there that works, right?
+## The value of standard APIs
+
+We're all familiar with how useful standardisation has been when it comes to browser APIs. The W3C has been invaluable when it comes to making sure that the browsers we use behave in (mostly) the same way.
+
+So, the same should apply to APIs that go over the network, right?
+
+Right?
+
+Unfortunately, this is where the ideals preached by theory and practice diverge. When you're a browser vendor, trying to find a balance between interoperability and competitiveness, you have plenty of incentive to make sure that the APIs being designed are implementable and maintenable. And if it's neither, then it gets backed out. At least for a while.
+
+MathML support, for example, was dropped by Chrome a few years ago and is only now [being re-developed](https://bugs.chromium.org/p/chromium/issues/detail?id=6606). For a browser API to be standardised, implemented across multiple browser engines, and _stay_ supported, it needs to be well thought out. For the most part, that rule seems to apply.
+
+The network APIs standardised by the W3C or the IETF have next to no such limiting incentives. W3C's history when it comes to HTTP APIs is littered with disaster. [SOAP](https://en.wikipedia.org/wiki/SOAP) and the [Web Services standards](https://en.wikipedia.org/wiki/List_of_web_service_specifications) have a deserved reputation for complexity and are almost exclusively used in aging enterprise applications. IETF has it's failures as well such as the [Atom Publishing Protocol](https://datatracker.ietf.org/doc/html/rfc5023) an API for weblogs and CMSes that isn't used by any major blog service or CMS everywhere.
+
+This means that a healthy scepticism is warranted when you're assessing standardised APIs. There is a real risk that they come with baggage, both in terms of implementation and in terms of _ecosystem_. These APIs come in a variety of shapes and sizes. Some are complex; probably too complex. Others are simple; probably too simple. And finally, there are the _implicit_ standards, the conventions that form around idiomatic use of HTTP, its structure and its grammar.
 
 ## Micropub
 
-On the too-simple-to-work end of things we have [`micropub`](https://indieweb.org/Micropub) which is laser-focused on being a general-purpose API for blogging. Micropub is tied to the [microformats concept](http://microformats.org/) so using it would require you to build or extend a microformat which can be used for annotations and bookmarking. And unfortunately, very few people outside of the indieweb scene uses microformats or micropub these days.
+On the probably too simple end we have [`micropub`](https://indieweb.org/Micropub) which is laser-focused on being a general-purpose API for blogging. It didn't originate with the W3C as it was developed and implemented by the IndieWeb community before being brought to the W3C for standardisation. Micropub is tied to the [microformats concept](http://microformats.org/) so using it would require you to build or extend a microformat which can be used for annotations and bookmarking. And unfortunately, very few people outside of the indieweb scene uses microformats or micropub these days.
 
-Almost the entirety of the micropub API consists of relatively simple `POST` requests to a single web endpoint so it's fairly simple to build and use. And the indieweb scene has a decent set of readymade libraries that support their formats.
+Almost the entirety of the micropub API consists of relatively simple `POST` requests, where the payload is a urlencoded (or JSON-encoded) microformat to a single web endpoint. It's fairly simple to build and use. And the indieweb scene has a decent set of readymade libraries that support their formats.
 
-But, again, it's focused on blogging. Even though it's simple and has a decent ecosystem, it doesn't support annotation. Extending it would mean losing the benefit of the ecosystem which is generally the point of using it.
+The [specification itself](https://micropub.spec.indieweb.org/) is fairly readable as far as specifications go.
+
+Here's an example of saving a [bookmark](https://indieweb.org/bookmark) from the indiweb page:
+
+```
+POST /micropub HTTP/1.1
+Host: aaronparecki.com
+Content-type: application/x-www-form-urlencoded
+
+h=entry
+&bookmark-of=https%3A%2F%2Fplus.google.com%2F%2BKartikPrabhu%2Fposts%2FUzKErSbfmHq
+&name=To+everyone+who+is+complaining+about+Popular+Science+shutting+down+comments...
+&content=%22Why+is+there+this+expectation+that+every+website+should+be+a+forum%3F+No+website+has+any+obligation+to+provide+a+space+for+your+rants.+Use+your+own+space+on+the+web+to+do+that.%22
+&category[]=indieweb&category[]=comments
+```
+
+As a specification it only concerns itself with the create, update, and delete aspect of each entry. It doesn't specify how you discover earlier entries to update or delete but it's generally expected that you either just use feeds ([JSON Feed](https://www.jsonfeed.org/) is the modern JSON version of the concept) or just literally scrape the blog's HTML using microformats2. Basically, you can use whatever is the simplest for your use case.
+
+The issue with micropub is that while [microformats2](http://microformats.org/wiki/microformats2) is an open-ended and extensible format, it's also generally not used that way. Most of the microformats that people use are the standard ones. This means that, if the fairly small robust community is micropub's strength, you lose that advantage as soon as you start adding complex annotation extensions to the format.
+
+However...
+
+If your annotation needs can be expressed in the form of a _URL_, then it might be a strong fit.
+
+A microformat entry can be a bookmark. So, it can easily express something like a specific location in a text _provided_ that location can be expressed as a fragment identifier. That's easy if you have a document where every major element has an `id` attribute, but what if they don't or what if you need to highlight a run of text (in other words: bookmark a text selection)?
+
+In that case, micropub wouldn't really work.
+
+Unless...
+
+One possibility is the proposed [text fragment standard](https://wicg.github.io/scroll-to-text-fragment/) proposed by the Chrome team. It's already shipping in Chrome and even though it hasn't shipped in other browsers, they don't seem opposed to it in principle either.
+
+With a text fragment you can link to and highlight a specific run of text using the URL alone, without a complex annotation selector. It obviously isn't as flexible or powerful as W3C Web Annotations but it's simple to use and comes with [a robust JavaScript implementation that's maintained by Google](https://www.npmjs.com/package/text-fragments-polyfill). The utilities provided by that module could be used to implement fragment matching for saving highlights using the micropub API.
+
+Web Annotations is a powerful format. It offers a lot of features beyond text fragment matching, such as XPath selectors, CSS selectors, text position selectors, ranges, style customisation, and more. If you need the features, Web Annotations provide.
+
+If, however, your annotation needs can be covered by links, using element id attributes or text fragments, then micropub might well be the strongest, simplest option.
 
 ## Graphql
 
@@ -69,4 +119,4 @@ With scope filtering, getting or adding a bookmark for a reader position, for ex
 
 Might work?
 
-## A more detailed proposal for how the Web Annotations Protocol could work for an API server
+## The two main alternatives in more detail (micropub and a simplified Web Annotations Protocol subset)
