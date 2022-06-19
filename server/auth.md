@@ -30,6 +30,7 @@ But even if we need APIs that are annotation-specific, you could still use the e
 1. This approach works best if each web book only plans to work with a small set of potential annotation servers. Unlike some Oauth approaches, this won't let the end user type in an API URL of their choosing. An ideal situation for this approach would be something like a library-hosted web book that works with a short list of annotation servers that are likely to represent their end users.
 2. The more annotation servers you want to support, the less appropriate this approach becomes.
 3. The annotation server _should_ be hosted on its own domain, separate from other services. Even though this approach is fairly secure, it is a way to bypass some of the CORS security features of the web platform so you'd want the annotations server siloed if something goes wrong.
+4. Some testing needs to be done to make sure that the handover of annotation data from the book to the annotation server conforms to the current privacy protections that browsers have in place.
 
 ## The not quite as simple, but industry standard: CORS-based APIs using access tokens for authentication
 
