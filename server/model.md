@@ -105,6 +105,42 @@ It's still valuable work. You could pick a subset of it and use that as the foun
 
 ## URL-based approaches
 
+From the [api](./api.md) chapter:
+
+> One possibility is the proposed [text fragment standard](https://wicg.github.io/scroll-to-text-fragment/) proposed by the Chrome team. It's already shipping in Chrome and even though it hasn't shipped in other browsers, they don't seem opposed to it in principle either.
+>
+> With a text fragment you can link to and highlight a specific run of text using the URL alone, without a complex annotation selector. It obviously isn't as flexible or powerful as W3C Web Annotations but it's simple to use and comes with [a robust JavaScript implementation that's maintained by Google](https://www.npmjs.com/package/text-fragments-polyfill).
+
+The URL is one of the basic building blocks of the web. It's supported by everything. Bookmarking services. Blogging APIs. File formats. You can link to a URL from pretty much anywhere and save it pretty much everywhere.
+
+This means that any time you can make the URL the core of your data format, you get pretty broad reach and distribution almost for free.
+
+Luckily, selecting a specific part of a document to be the target of some other structured document is what URLs do well.
+
+We already have `id` or regular fragment selectors. You can go a long way to make bookmarking powerful and granular by giving every block element in a book an id attribute. It doesn't just help bookmarking specificity but its also just generally useful for the reader: they could link to specific paragraphs or headings.
+
+And text fragments, as proposed by Google, would seem to complete the circle, at least when it comes to _anchoring_ annotations. Use `id` to bookmark specific locations and text fragments to highlight specific ranges.
+
+The only question becomes how to package it up in an interchange format and how to fill in the remaining feature gaps. Namely, usually wherever you have highlights, you also have notes attached to those highlights.
+
+If those three components (ID, text fragments, notes) are enough to cover our needs then you can wrap them up in pretty much any file format that associates a string of HTML with a URL.
+
+And there's _tons_ of those:
+
+- [Atom (XML)](<https://en.wikipedia.org/wiki/Atom_(web_standard)>)
+- [RSS (sorta kinda XML)](https://en.wikipedia.org/wiki/RSS)
+- [JSON-feed](https://www.jsonfeed.org/version/1/)
+- [The h-entry microformat (HTML)](http://microformats.org/wiki/h-entry)
+- [hal+json for associating arbitrary JSON with URLs](https://datatracker.ietf.org/doc/html/draft-kelly-json-hal)
+- [schema.org Comment object (URL with fragments goes into `about`)](https://schema.org/Comment) (Search engines like schema.org)
+- Plain HTML with an `ol` where each `li` contains a link and an associated comment wrapped in a `article`. Or, if you want the HTML to be nice and readable, for the highlights you could use a `blockquote` of the hightlighted HTML with the URL (and its text fragment) in the `cite` for anchored annotation notes.
+
+Sure, it leaves you with fewer features than web annotations would. Can't use Xpath or CSS selectors to target the annotation. No hooks for letting the annotation customise the CSS or rendering of itself on the page. No bidirectional links. No text position targeting to save space.
+
+Though the text fragment specification does support multiple text fragments in one URL, which could be nifty.
+
+The URL-based approach would make many things a lot easier. If the project's needs can fit in a URL, so to speak.
+
 ### Activity Streams (Data Model)
 
 ### Micropub and microformats
