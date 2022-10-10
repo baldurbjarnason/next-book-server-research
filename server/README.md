@@ -31,3 +31,5 @@ Of these, the first requirement is the trickiest because auth is always hard.
 ## 2. [Data Model](model.md)
 
 ## 3. [APIs](api.md)
+
+## 3. [Off-the-wall ideas](off-the-wall.md)
